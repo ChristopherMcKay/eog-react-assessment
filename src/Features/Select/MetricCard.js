@@ -26,14 +26,7 @@ const query = `
 
 `;
 
-// query ($selectedMetric: String) {
-//   getLastKnownMeasurement(metricName: $selectedMetric){
-//   metric
-//   at
-//   value
-//   unit
-//   }
-// }
+
 
 const useStyles = makeStyles({
   card: {
@@ -99,7 +92,7 @@ const MetricCard = () => {
         {currentMetricValue.metric}
       </Typography>
       <Typography variant="h5" component="h2">
-        benevolent
+      {currentMetricValue.value}
       </Typography>
     </CardContent>
   </Card>

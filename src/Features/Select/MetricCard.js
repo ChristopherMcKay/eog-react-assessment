@@ -60,6 +60,7 @@ const MetricCard = () => {
   const dispatch = useDispatch();
 
   const { selectedMetric, currentMetricValue } = useSelector(state => state.metrics);
+  
 
   const [result] = useQuery({
     query,
@@ -69,6 +70,8 @@ const MetricCard = () => {
   });
 
   const { fetching, data, error } = result;
+
+  console.log(data);
 
   useEffect(() => {
     if (error) {

@@ -7,6 +7,7 @@ import Select from '@material-ui/core/Select';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import MetricCard from './MetricCard';
+import MetricGraph from './MetricGraph';
 
 import { Provider, createClient, useQuery } from 'urql';
 import { useDispatch, useSelector } from 'react-redux';
@@ -121,7 +122,8 @@ const SelectMetric = () => {
       
     : <p>shit</p>
     }
-    { selectedMetric ? <MetricCard /> : null }
+    { selectedMetric ?<div>  <MetricCard /> <MetricGraph /> </div>
+    : null }
       </div>
         
     );

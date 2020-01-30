@@ -6,15 +6,15 @@ import sagas from './sagas';
 import reducers from './reducers';
 
 const reducer = combineReducers(reducers);
-export type IState = ReturnType<typeof reducer>;
 
-export default () => {
+const initialState = {};
+
+
   const composeEnhancers = composeWithDevTools({});
   const sagaMiddleware = createSagaMiddleware();
   const middlewares = applyMiddleware(sagaMiddleware);
-  const store = createStore(reducer, composeEnhancers(middlewares));
+  const store = createStore(reducer, initialState, composeEnhancers(middlewares));
 
   sagaMiddleware.run(sagas);
 
-  return store;
-};
+export default store;

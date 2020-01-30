@@ -6,6 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
+import MetricCard from './MetricCard';
+
 import { Provider, createClient, useQuery } from 'urql';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from './reducer';
@@ -62,7 +64,7 @@ const SelectMetric = () => {
 
   const dispatch = useDispatch();
 
-  const { metrics } = useSelector(state => state.metrics);
+  const { metrics, selectedMetric } = useSelector(state => state.metrics);
 
   useEffect(() => {
     dispatch(actions.selectMetric(metric));
@@ -119,6 +121,7 @@ const SelectMetric = () => {
       
     : <p>shit</p>
     }
+    { selectedMetric ? <MetricCard /> : null }
       </div>
         
     );

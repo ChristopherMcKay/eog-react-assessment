@@ -2,7 +2,7 @@ import { createSlice } from 'redux-starter-kit';
 
 const initialState = {
   metrics: [],
-  selectedMetric: '',
+  selectedMetric: null,
   currentMetricValue: null,
   pastMetricValues: null
 };
@@ -16,7 +16,6 @@ const slice = createSlice({
       state.metrics = metrics;
     },
     selectMetric: (state, action) => {
-        console.log(action.payload)
         const selectedMetric = action.payload;
         state.selectedMetric = selectedMetric;
       },

@@ -6,7 +6,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Wrapper from './components/Wrapper';
-import SelectHolder from './Features/Select/SelectHolder';
+import SelectMetric from './Features/Select/SelectMetric';
 import NowWhat from './components/NowWhat';
 
 import store from './store'
@@ -31,7 +31,7 @@ const App = () => (
     <Provider store={store}>
       <Wrapper>
         <Header />
-        <SelectHolder />
+        <SelectMetric />
         <NowWhat />
         <ToastContainer />
       </Wrapper>

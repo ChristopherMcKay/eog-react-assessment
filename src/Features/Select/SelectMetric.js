@@ -9,26 +9,17 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { Provider, createClient, useQuery } from 'urql';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from './reducer';
-import store from '../../store';
 
 
-// const client = createClient({
-//     url: 'https://react.eogresources.com/graphql',
-//   });
-  
+const client = createClient({
+  url: 'https://react.eogresources.com/graphql',
+});
 
-//   const getPastMetricsQuery = `
-//   {
-//     getMeasurements( input: {
-//       metricName: $metric
-//     }) {
-//     metric
-//     at
-//     value
-//     unit
-//   }
-// }
-//   `;
+const query = `
+{
+  getMetrics
+}
+`;
 
 
 const useStyles = makeStyles(theme => ({
@@ -42,13 +33,13 @@ const useStyles = makeStyles(theme => ({
   }));
 
 
-  // export default () => {
-  //   return (
-  //     <Provider value={client}>
-  //       <SelectMetric />
-  //     </Provider>
-  //   );
-  // };
+  export default () => {
+    return (
+      <Provider value={client}>
+        <SelectMetric />
+      </Provider>
+    );
+  };
 
 
 const SelectMetric = () => {
@@ -62,24 +53,40 @@ const SelectMetric = () => {
     const [labelWidth, setLabelWidth] = React.useState(0);
 
     useEffect(() => {
-      console.log(store)
       setLabelWidth(inputLabel.current.offsetWidth);
     }, []);
 
   const handleChange = event => {
     setMetric(event.target.value);
-
   };
 
   const dispatch = useDispatch();
 
-  // const [getMetricsResult] = useQuery({
-  //   getMetricsQuery
-  // });
-
-
-
   const { metrics } = useSelector(state => state.metrics);
+
+  useEffect(() => {
+    dispatch(actions.selectMetric(metric));
+  }, [metric]);
+
+  const [result] = useQuery({
+    query
+  });
+
+  const { fetching, data, error } = result;
+
+  useEffect(() => {
+    if (error) {
+      dispatch(actions.metricApiErrorReceived({ error: error.message }));
+      return;
+    }
+    if (!data) return;
+    const { getMetrics } = data;
+
+    dispatch(actions.metricsRecevied(getMetrics));
+  }, [dispatch, data, error]);
+
+  if (fetching) return <LinearProgress />;
+
 
   const outputList = () => {
     return metrics.map(item => {
@@ -88,22 +95,6 @@ const SelectMetric = () => {
           </MenuItem>
     })
   }
-
-  // const { fetching, data, error } = getMetricsResult;
-
-
-  // useEffect(() => {
-  //   if (error) {
-  //     dispatch(actions.metricApiErrorReceived({ error: error.message }));
-  //     return;
-  //   }
-  //   if (!data) return;
-  //   const { getMetrics } = data;
-
-  //   dispatch(actions.metricsRecevied(getMetrics));
-  // }, [dispatch, data, error]);
-
-  // if (fetching) return <LinearProgress />;
 
  
 
@@ -133,5 +124,3 @@ const SelectMetric = () => {
     );
 
 }
-
-export default SelectMetric;

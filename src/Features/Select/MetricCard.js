@@ -31,6 +31,8 @@ const query = `
 const useStyles = makeStyles({
   card: {
     width: 200,
+    backgroundColor: 'rgb(226,231,238)',
+    margin: 0
   },
   bullet: {
     display: 'inline-block',
@@ -67,6 +69,7 @@ const MetricCard = () => {
     variables: {
       selectedMetric
     },
+    pollInterval: 1300
   });
 
   const { fetching, data, error } = result;
@@ -87,7 +90,7 @@ const MetricCard = () => {
   if (fetching) return <LinearProgress />;
 
   return (
-    <div>
+    <React.Fragment>
     { currentMetricValue ? 
     <Card className={classes.card}>
     <CardContent>
@@ -103,6 +106,6 @@ const MetricCard = () => {
   }
 
     
-    </div>
+    </React.Fragment>
   );
 }

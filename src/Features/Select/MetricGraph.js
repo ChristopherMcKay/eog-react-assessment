@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 import { Provider, createClient, useQuery } from 'urql';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,24 +29,6 @@ const currentTime = Date.now();
 
 const startTime = currentTime - 30 * 60000;
 
-const useStyles = makeStyles({
-  card: {
-    width: 200,
-  },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-});
-
-
 
 export default () => {
   return (
@@ -59,8 +40,6 @@ export default () => {
 
 const MetricCard = () => {
 
-  const classes = useStyles();
-
   const dispatch = useDispatch();
 
   const { selectedMetric, pastMetricValues } = useSelector(state => state.metrics);
@@ -71,6 +50,7 @@ const MetricCard = () => {
         selectedMetric,
         startTime
     },
+    pollInterval: 1300
   });
 
   const { data, error } = result;
@@ -89,26 +69,33 @@ const MetricCard = () => {
     dispatch(actions.pastMetricValuesRecevied(getMeasurements));
   }, [dispatch, data, error]);
 
+  const formatDate = (tickItem) => {
+    let date = new Date(tickItem);
+    let hour = date.getHours();
+    let min = date.getMinutes();
+    let time = `${hour}:${min}`;
+    return time;
+  }
+
   return (
       
-    <div>
+    <React.Fragment>
         { pastMetricValues ?  <LineChart
-        width={1000}
-        height={450}
+        width={1200}
+        height={500}
         data={pastMetricValues}
         margin={{
           top: 5, right: 30, left: 20, bottom: 5,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="at" />
+        <XAxis dataKey="at" tickFormatter={formatDate} />
         <YAxis />
         <Tooltip />
-        <Legend />
         <Line type="monotone" dataKey="value" stroke="#82ca9d" />
       </LineChart>
         : null}
     
-    </div>
+    </React.Fragment>
   );
 }

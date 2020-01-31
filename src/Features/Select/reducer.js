@@ -4,7 +4,8 @@ const initialState = {
   metrics: [],
   selectedMetric: null,
   currentMetricValue: null,
-  pastMetricValues: null
+  pastMetricValues: null,
+  error: null
 };
 
 const slice = createSlice({
@@ -27,8 +28,11 @@ const slice = createSlice({
         const pastMetricValues = action.payload;
         state.pastMetricValues = pastMetricValues;
       },
-    metricApiErrorReceived: (state, action) => state,
-  },
+    metricApiErrorReceived: (state, action) => {
+        const { error } = action.payload;
+        state.error = error;
+  }
+}
 });
 
 export const reducer = slice.reducer;

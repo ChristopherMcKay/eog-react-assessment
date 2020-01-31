@@ -6,13 +6,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import MetricCard from './MetricCard';
-import MetricGraph from './MetricGraph';
-
 import { Provider, createClient, useQuery } from 'urql';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from './reducer';
-
 
 const client = createClient({
   url: 'https://react.eogresources.com/graphql',
@@ -65,7 +61,7 @@ const SelectMetric = () => {
 
   const dispatch = useDispatch();
 
-  const { metrics, selectedMetric } = useSelector(state => state.metrics);
+  const { metrics } = useSelector(state => state.metrics);
 
   useEffect(() => {
     dispatch(actions.selectMetric(metric));
@@ -102,16 +98,15 @@ const SelectMetric = () => {
  
 
     return(
-      <div>
-
-      { metrics ? 
-            <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel  id="demo-simple-select-outlined-label">
+      <React.Fragment>
+      
+            <FormControl variant="filled" className={classes.formControl}>
+            <InputLabel  id="demo-simple-select-filled-label">
                 Metric
             </InputLabel>
             <Select
-            labelId="demo-simple-select-outlined-label"
-            id="demo-simple-select-outlined"
+            labelId="demo-simple-select-filled-label"
+            id="demo-simple-select-filled"
             value={metric}
             onChange={handleChange}
             labelWidth={labelWidth}
@@ -120,11 +115,7 @@ const SelectMetric = () => {
             </Select>
         </FormControl>
       
-    : <p>shit</p>
-    }
-    { selectedMetric ?<div>  <MetricCard /> <MetricGraph /> </div>
-    : null }
-      </div>
+    </React.Fragment>
         
     );
 

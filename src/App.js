@@ -7,7 +7,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/Header';
 import Wrapper from './components/Wrapper';
-import Metric from './Features/Select/Metric';
+import Metric from './Features/Metric/Metric';
 
 import store from './store'
 

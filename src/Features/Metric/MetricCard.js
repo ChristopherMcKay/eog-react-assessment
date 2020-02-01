@@ -9,25 +9,6 @@ import { Provider, createClient, useQuery } from 'urql';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from './reducer';
 
-const client = createClient({
-  url: 'https://react.eogresources.com/graphql',
-});
-
-const query = `
-
-  query ($selectedMetric: String!) {
-  getLastKnownMeasurement(metricName: $selectedMetric) {
-    metric
-    at
-    value
-    unit
-}
-}
-
-`;
-
-
-
 const useStyles = makeStyles({
   card: {
     width: 200,
@@ -47,6 +28,42 @@ const useStyles = makeStyles({
   },
 });
 
+const client = createClient({
+  url: 'https://react.eogresources.com/graphql',
+});
+
+const createQuery = (selectedMetric) => {
+
+  let query = `query ($startTime: Timestamp) {
+    getMultipleMeasurements(input: [`
+
+  for (let i = 0; i < selectedMetric.length; i++) {
+    query += `{
+      metricName: "${selectedMetric[i]}",
+      after: $startTime
+    },`
+}
+
+  query += `]) {
+    metric
+    measurements {
+      metric
+      value
+      at
+    }
+  }
+  }
+
+`;
+
+return query;
+
+}
+
+const currentTime = Date.now();
+
+const startTime = currentTime - 30 * 60000;
+
 export default () => {
   return (
     <Provider value={client}>
@@ -61,20 +78,19 @@ const MetricCard = () => {
 
   const dispatch = useDispatch();
 
-  const { selectedMetric, currentMetricValue } = useSelector(state => state.metrics);
-  
+  const { selectedMetric, metricValues } = useSelector(state => state.metrics);
+
+  const query = createQuery(selectedMetric);
 
   const [result] = useQuery({
     query,
     variables: {
-      selectedMetric
+      startTime
     },
     pollInterval: 1300
   });
 
   const { fetching, data, error } = result;
-
-  console.log(data);
 
   useEffect(() => {
     if (error) {
@@ -82,30 +98,31 @@ const MetricCard = () => {
       return;
     }
     if (!data) return;
-    const { getLastKnownMeasurement } = data;
+    const { getMultipleMeasurements } = data;
 
-    dispatch(actions.currentMetricValueRecevied(getLastKnownMeasurement));
+    dispatch(actions.metricValueRecevied(getMultipleMeasurements));
   }, [dispatch, data, error]);
 
   if (fetching) return <LinearProgress />;
 
   return (
     <React.Fragment>
-    { currentMetricValue ? 
-    <Card className={classes.card}>
-    <CardContent>
-      <Typography className={classes.title} color="textSecondary" gutterBottom>
-        {currentMetricValue.metric}
-      </Typography>
-      <Typography variant="h5" component="h2">
-      {currentMetricValue.value}
-      </Typography>
-    </CardContent>
-  </Card>
+    { metricValues ? <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}> {metricValues.map(metric => {
+       return (
+        <Card className={classes.card} key={Math.random()}>
+        <CardContent>
+          <Typography className={classes.title} color="textSecondary" gutterBottom>
+            {metric.metric}
+          </Typography>
+          <Typography variant="h5" component="h2">
+          {metric.measurements[0].value}
+          </Typography>
+        </CardContent>
+      </Card>
+       )
+    }) } </div>
   : null
   }
-
-    
     </React.Fragment>
   );
 }

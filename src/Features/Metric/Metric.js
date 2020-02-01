@@ -15,7 +15,7 @@ const Metric = () => {
 
             <SelectMetric />
             
-            { selectedMetric ? <div> <div style={{ display:'flex', justifyContent:'center', width: '100%' }}><MetricCard /></div> <MetricGraph /></div>
+            { selectedMetric.length > 0 ? <div> <div style={{ display:'flex', justifyContent:'center', width: '100%' }}><MetricCard /></div> <MetricGraph /></div>
             : null }
 
             { error ? <p>{error}</p> : null }

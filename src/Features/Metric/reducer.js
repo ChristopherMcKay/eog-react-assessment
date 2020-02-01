@@ -2,9 +2,8 @@ import { createSlice } from 'redux-starter-kit';
 
 const initialState = {
   metrics: [],
-  selectedMetric: null,
-  currentMetricValue: null,
-  pastMetricValues: null,
+  selectedMetric: [],
+  metricValues: null,
   error: null
 };
 
@@ -20,13 +19,9 @@ const slice = createSlice({
         const selectedMetric = action.payload;
         state.selectedMetric = selectedMetric;
       },
-    currentMetricValueRecevied: (state, action) => {
-        const currentMetricValue = action.payload;
-        state.currentMetricValue = currentMetricValue;
-      },
-    pastMetricValuesRecevied: (state, action) => {
-        const pastMetricValues = action.payload;
-        state.pastMetricValues = pastMetricValues;
+    metricValueRecevied: (state, action) => {
+        const metricValues = action.payload;
+        state.metricValues = metricValues;
       },
     metricApiErrorReceived: (state, action) => {
         const { error } = action.payload;

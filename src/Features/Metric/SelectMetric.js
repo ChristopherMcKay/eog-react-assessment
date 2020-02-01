@@ -1,14 +1,53 @@
 import React, { useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Chip from '@material-ui/core/Chip';
 
 import { Provider, createClient, useQuery } from 'urql';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from './reducer';
+
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 160,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+  },
+}));
+
+const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
+  };
+
+  const getStyles = (metric, stateMetrics, theme) => {
+    return {
+      fontWeight:
+        stateMetrics.indexOf(metric) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
 
 const client = createClient({
   url: 'https://react.eogresources.com/graphql',
@@ -20,18 +59,6 @@ const query = `
 }
 `;
 
-
-const useStyles = makeStyles(theme => ({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 160,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }));
-
-
   export default () => {
     return (
       <Provider value={client}>
@@ -40,23 +67,15 @@ const useStyles = makeStyles(theme => ({
     );
   };
 
-
 const SelectMetric = () => {
 
     const classes = useStyles();
+    const theme = useTheme();
 
-    const [metric, setMetric] = React.useState('');
-
-    const inputLabel = React.useRef('Metric');
-
-    const [labelWidth, setLabelWidth] = React.useState(0);
-
-    useEffect(() => {
-      setLabelWidth(inputLabel.current.offsetWidth);
-    }, []);
+  const [stateMetrics, setMetrics] = React.useState([]);
 
   const handleChange = event => {
-    setMetric(event.target.value);
+    setMetrics(event.target.value);
   };
 
   const dispatch = useDispatch();
@@ -64,8 +83,8 @@ const SelectMetric = () => {
   const { metrics } = useSelector(state => state.metrics);
 
   useEffect(() => {
-    dispatch(actions.selectMetric(metric));
-  }, [metric]);
+    dispatch(actions.selectMetric(stateMetrics));
+  }, [stateMetrics, dispatch]);
 
   const [result] = useQuery({
     query
@@ -86,37 +105,35 @@ const SelectMetric = () => {
 
   if (fetching) return <LinearProgress />;
 
-
-  const outputList = () => {
-    return metrics.map(item => {
-      return <MenuItem value={item} key={Math.random()}>
-              {item}
-          </MenuItem>
-    })
-  }
-
- 
-
     return(
       <React.Fragment>
-      
-            <FormControl variant="filled" className={classes.formControl}>
-            <InputLabel  id="demo-simple-select-filled-label">
-                Metric
-            </InputLabel>
-            <Select
-            labelId="demo-simple-select-filled-label"
-            id="demo-simple-select-filled"
-            value={metric}
-            onChange={handleChange}
-            labelWidth={labelWidth}
-            >
-            { outputList() }
-            </Select>
-        </FormControl>
+        <FormControl className={classes.formControl}>
+        <InputLabel id="demo-mutiple-chip-label">Metric</InputLabel>
+        <Select
+          labelId="demo-mutiple-chip-label"
+          id="demo-mutiple-chip"
+          multiple
+          value={stateMetrics}
+          onChange={handleChange}
+          input={<Input id="select-multiple-chip" />}
+          renderValue={selected => (
+            <div className={classes.chips}>
+              {selected.map(value => (
+                <Chip key={value} label={value} className={classes.chip} />
+              ))}
+            </div>
+          )}
+          MenuProps={MenuProps}
+        >
+          {metrics.map(metric => (
+            <MenuItem key={metric} value={metric} style={getStyles(metric, stateMetrics, theme)}>
+              {metric}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       
     </React.Fragment>
         
     );
-
 }
